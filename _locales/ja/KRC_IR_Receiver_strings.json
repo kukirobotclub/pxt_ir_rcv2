@@ -1,0 +1,7 @@
+{
+    "KRC_IR.connectIrReceiver|block": "赤外線受信接続ピン %pin",
+    "KRC_IR.irDataReceived|block":"データ受信したとき",
+    "KRC_IR.irCommand|block":"受信データ8bit",
+    "KRC_IR.irAddressCommand|block":"受信データ16bit",
+    "KRC_IR.irHex|block":"受信データ16進"
+}

@@ -236,7 +236,6 @@ namespace KRC_IR {
                         ir_repeat = 0
                         if (gDebugMode) {
                             serial.writeLine("TO")
-                            print_irdata()
                             print_irdata_debug()
                         }
                         irType = 0			// NEC,PNASONIC,SONY
@@ -268,6 +267,9 @@ namespace KRC_IR {
         let ret = ir_data
         ir_data = 0
         ir_repeat = 0
+        if (gDebugMode) {
+            print_irdata()
+        }
         return ret
     }
 
@@ -281,6 +283,9 @@ namespace KRC_IR {
         let ret = (ir_data & 255)
         ir_data = 0
         ir_repeat = 0
+        if (gDebugMode) {
+            print_irdata()
+        }
         return ret
     }
 

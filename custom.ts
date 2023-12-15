@@ -357,7 +357,7 @@ namespace KRC_IR {
     //% blockHidden=false
     //% advanced=true
     export function irCounter(): number {
-        return dbg_cnt
+        return void_cnt    //dbg_cnt
     }
 
     /**

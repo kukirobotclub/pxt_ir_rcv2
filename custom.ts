@@ -90,11 +90,11 @@ namespace KRC_IR {
             case 0:	// Leader
                 if (tm_on_off >= 2600 && tm_on_off <= 4100) {
                     irType = 3;	//SONY
-                    state = 1;
+                    state = 3;
                 }
                 if (tm_on_off > 4100 && tm_on_off <= 6000) {
                     irType = 2;	//Panasonic
-                    state = 1;
+                    state = 2;
                 }
                 if (tm_on_off > 6000 && tm_on_off <= 8000) {
                     irType = 2;	//Panasonic Repeat	殆ど使われないということ
@@ -113,53 +113,58 @@ namespace KRC_IR {
                     state = 1;
                 }
                 break;
-            case 1:	// reciving bit
-                if (irType === 1) { // NEC
-                    // NEC
-                    if (tm_on_off < 1686) {            // low bit
-                        make_data(0);
-                    } else if (tm_on_off < 2600) {	     // high bit
-                        make_data(1);
-                    }
-                    if (bits >= 32) {
-                        ir_data = work_buff[2] + work_buff[3] * 256
-                        last_ir_data = ir_data
-                        state = 0
-                    }
-                }
-                if (irType === 2) { // Panasonic
-                    // Panasonic
-                    if (tm_on_off < 1200) {            // low bit
-                        make_data(0);
-                    } else if (tm_on_off < 2200) {	     // high bit
-                        make_data(1);
-                    }
-                    if (bits >= 48) {
-                        ir_data = work_buff[4] + work_buff[5] * 256
-                        last_ir_data = ir_data
-                        state = 0
-                    }
-                }
-                if (irType === 3) { // SONY
-                    // SONY  "0" 1200 "1" 1800
-                    if (tm_on_off < 1500) {            // low bit
-                        make_data(0);
-                    } else if (tm_on_off < 2400) {	     // high bit
-                        make_data(1);
-                    }
-                    if (bits >= 11) {
-                        ir_data = work_buff[0] + work_buff[1] * 256
-                        last_ir_data = ir_data
-                        state = 0
-                    }
-                }
-                if (tm_on_off >= 2600) {
-                    state = 0;
+            case 1:	// reciving bit NEC
+                // NEC
+                if (tm_on_off < 1686) {            // low bit
+                    make_data(0);
+                } else if (tm_on_off < 2600) {	     // high bit
+                    make_data(1);
+                } else {
+                    initIrWork()
                     if (gDebugMode) {
                         serial.writeString("OV ")
-                        //serial.writeNumber(tm_on_off)
-                        //serial.writeLine("")
                     }
+                }
+                if (bits >= 32) {
+                    ir_data = work_buff[2] + work_buff[3] * 256
+                    last_ir_data = ir_data
+                    initIrWork()
+                }
+                break;
+            case 2:	// reciving bit Panasonic
+                // Panasonic
+                if (tm_on_off < 1200) {            // low bit
+                    make_data(0);
+                } else if (tm_on_off < 2200) {	     // high bit
+                    make_data(1);
+                } else {
+                    initIrWork()
+                    if (gDebugMode) {
+                        serial.writeString("OV ")
+                    }
+                }
+                if (bits >= 48) {
+                    ir_data = work_buff[4] + work_buff[5] * 256
+                    last_ir_data = ir_data
+                    initIrWork()
+                }
+                break;
+            case 3:	// reciving bit  SONY
+                // SONY  "0" 1200 "1" 1800
+                if (tm_on_off < 1500) {            // low bit
+                    make_data(0);
+                } else if (tm_on_off < 2400) {	     // high bit
+                    make_data(1);
+                } else {
+                    initIrWork()
+                    if (gDebugMode) {
+                        serial.writeString("OV ")
+                    }
+                }
+                if (bits >= 11) {
+                    ir_data = work_buff[0] + work_buff[1] * 256
+                    last_ir_data = ir_data
+                    initIrWork()
                 }
                 break;
         }
@@ -171,7 +176,6 @@ namespace KRC_IR {
     }
 
     function initIrWork() {
-        irType = 0			// NEC,PNASONIC,SONY
         state = 0		// 受信フェーズ 0:Leader待ち 1:ビット受信中
         bits = 0			// 受信ビットカウンタ
         clear_buff()
@@ -230,12 +234,12 @@ namespace KRC_IR {
                         ir_data = 0
                         last_ir_data = 0
                         ir_repeat = 0
-                        //void_cnt = 0
                         if (gDebugMode) {
                             serial.writeLine("TO")
                             print_irdata()
                             print_irdata_debug()
                         }
+                        irType = 0			// NEC,PNASONIC,SONY
                         initIrWork();
                     }
                 }
@@ -357,7 +361,7 @@ namespace KRC_IR {
     //% blockHidden=false
     //% advanced=true
     export function irCounter(): number {
-        return void_cnt    //dbg_cnt
+        return dbg_cnt
     }
 
     /**

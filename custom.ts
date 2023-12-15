@@ -21,7 +21,7 @@ namespace KRC_IR {
     let gPulseDuration = 0			// パルス期間
     let gPulseDuration_lasttm = 0	// 前回パルスのタイムスタンプ
     let irType = 0			// NEC,PNASONIC,SONY
-    let state = 0		// 受信フェーズ 0:Leader待ち 1:ビット受信中 
+    let state = 0		// 受信フェーズ 0:Leader待ち 1:NECビット受信中 2:Panasonicビット受信中 3:SONYビット受信中
     let bits = 0			// 受信ビットカウンタ
     let work_buff: number[] = []	// 組み立てバッファ
     let ir_data = 0	     // 受信したデータ(完成した時点で更新)

@@ -128,6 +128,9 @@ namespace KRC_IR {
                 if (bits >= 32) {
                     ir_data = work_buff[2] + work_buff[3] * 256
                     last_ir_data = ir_data
+                    if (gDebugMode) {
+                        print_irdata()
+                    }
                     initIrWork()
                 }
                 break;
@@ -146,6 +149,9 @@ namespace KRC_IR {
                 if (bits >= 48) {
                     ir_data = work_buff[4] + work_buff[5] * 256
                     last_ir_data = ir_data
+                    if (gDebugMode) {
+                        print_irdata()
+                    }
                     initIrWork()
                 }
                 break;
@@ -164,6 +170,9 @@ namespace KRC_IR {
                 if (bits >= 11) {
                     ir_data = work_buff[0] + work_buff[1] * 256
                     last_ir_data = ir_data
+                    if (gDebugMode) {
+                        print_irdata()
+                    }
                     initIrWork()
                 }
                 break;
@@ -271,9 +280,6 @@ namespace KRC_IR {
         let ret = ir_data
         ir_data = 0
         ir_repeat = 0
-        if (gDebugMode) {
-            print_irdata()
-        }
         return ret
     }
 
@@ -287,9 +293,6 @@ namespace KRC_IR {
         let ret = (ir_data & 255)
         ir_data = 0
         ir_repeat = 0
-        if (gDebugMode) {
-            print_irdata()
-        }
         return ret
     }
 

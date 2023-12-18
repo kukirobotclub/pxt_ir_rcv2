@@ -224,7 +224,7 @@ namespace KRC_IR {
         control.inBackground(() => {
             while (true) {
                 dbg_cnt = dbg_cnt + 1
-                if (ir_data != 0) {
+                if (ir_data != 0 || state > 0) {
                     void_cnt = void_cnt + 1
                     if (void_cnt >= 10) {		//20ms*10
                         mark[pulseCnt] = -1
@@ -254,6 +254,10 @@ namespace KRC_IR {
     //% block="IRクリア"			//"IR data clear
     //% weight=70
     export function irClear(): void {
+        ir_data = 0
+        last_ir_data = 0
+        ir_repeat = 0
+        irType = 0			// NEC,PNASONIC,SONY
         initIrWork();
     }
 

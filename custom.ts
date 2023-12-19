@@ -10,6 +10,7 @@
  * Version 2022-07-25 1.02 void_cnt=0の場所変更、シリアル出力を全部コメント
  * Version 2023-11-16 2.00 検知ロジック変更onEvent
  * Version 2023-12-16 3.00 データ渡し方法の変更
+ * Version 2023-12-19 4.00 確定後の読み飛ばし
  */
 //% weight=100 color=#bc0f11 icon="\uf09e"
 namespace KRC_IR {
@@ -21,7 +22,7 @@ namespace KRC_IR {
     let gPulseDuration = 0			// パルス期間
     let gPulseDuration_lasttm = 0	// 前回パルスのタイムスタンプ
     let irType = 0			// NEC,PNASONIC,SONY
-    let state = 0		// 受信フェーズ 0:Leader待ち 1:NECビット受信中 2:Panasonicビット受信中 3:SONYビット受信中
+    let state = 0		// 受信フェーズ 0:Leader待ち 1:NECビット受信中 2:Panasonicビット受信中 3:SONYビット受信中 4:受信完了
     let bits = 0			// 受信ビットカウンタ
     let work_buff: number[] = []	// 組み立てバッファ
     let ir_data = 0	     // 受信したデータ(完成した時点で更新)
@@ -100,13 +101,13 @@ namespace KRC_IR {
                     irType = 2;	//Panasonic Repeat	殆ど使われないということ
                     ir_data = last_ir_data
                     ir_repeat = 1	//repeat
-                    state = 0
+                    state = 4
                 }
                 if (tm_on_off > 8000 && tm_on_off <= 11240) {
                     irType = 1;	//NEC
                     ir_data = last_ir_data
                     ir_repeat = 1	//repeat
-                    state = 0
+                    state = 4
                 }
                 if (tm_on_off > 11240 && tm_on_off <= 15736) {
                     irType = 1;	//NEC
@@ -131,7 +132,7 @@ namespace KRC_IR {
                     if (gDebugMode) {
                         print_irdata()
                     }
-                    initIrWork()
+                    state = 4
                 }
                 break;
             case 2:	// reciving bit Panasonic
@@ -152,7 +153,7 @@ namespace KRC_IR {
                     if (gDebugMode) {
                         print_irdata()
                     }
-                    initIrWork()
+                    state = 4
                 }
                 break;
             case 3:	// reciving bit  SONY
@@ -173,7 +174,7 @@ namespace KRC_IR {
                     if (gDebugMode) {
                         print_irdata()
                     }
-                    initIrWork()
+                    state = 4
                 }
                 break;
         }
@@ -280,6 +281,7 @@ namespace KRC_IR {
         let ret = ir_data
         ir_data = 0
         ir_repeat = 0
+        initIrWork()
         return ret
     }
 
@@ -293,6 +295,7 @@ namespace KRC_IR {
         let ret = (ir_data & 255)
         ir_data = 0
         ir_repeat = 0
+        initIrWork()
         return ret
     }
 
@@ -303,7 +306,7 @@ namespace KRC_IR {
     //% block="IR受信？"		//"IR data was received"
     //% weight=80
     export function irDataReceived(): boolean {
-        if (ir_data != 0) {
+        if (state == 4) {
             return true;
         } else {
             return false;
